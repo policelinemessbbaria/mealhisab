@@ -2,12 +2,14 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়া</title>
     
-    <!-- ফন্ট এবং আইকন লাইব্রেরি -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* বেসিক রিসেট */
@@ -15,14 +17,16 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* মোবাইলে ক্লিকের হলুদ ভাব দূর করতে */
         }
 
         body, html {
             height: 100%;
             width: 100%;
             font-family: 'Hind Siliguri', sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f7f9fc;
             overflow: hidden; /* স্ক্রল বার লুকানোর জন্য */
+            position: fixed; /* মোবাইল ব্রাউজারের অ্যাড্রেস বার লুকাতে সাহায্য করে */
         }
 
         /* লোডিং স্ক্রিনের ডিজাইন */
@@ -34,48 +38,54 @@
             height: 100%;
             background-color: #ffffff;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999; /* সবকিছুর ওপরে থাকবে */
+            justify-content: center; /* হরাইজন্টাল সেন্টার */
+            align-items: center;    /* ভার্টিক্যাল সেন্টার */
+            z-index: 9999;
             transition: opacity 0.5s ease-out;
         }
 
-        .logo-container {
+        /* লোগো এবং টেক্সটের কন্টেইনার */
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            animation: fadeIn 1.5s ease-in-out;
+            max-width: 80%; /* মোবাইল স্ক্রিনে জায়গা রাখতে */
+            animation: fadeIn 1.2s ease-in-out;
         }
 
+        /* লোগোটিকে মোবাইল স্ক্রিনে ছোট করা হয়েছে */
         .police-logo {
-            width: 120px;
+            width: 60px; /* লোগোর সাইজ অর্ধেক করে দেওয়া হয়েছে */
             height: auto;
-            margin-bottom: 20px;
-            /* লোগোর জন্য একটি সুন্দর শ্যাডো */
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            margin-bottom: 15px;
+            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.1)); /* সফট শ্যাডো */
         }
 
         .loading-text {
-            font-size: 1.5rem;
+            font-size: 1.1rem; /* টেক্সট সাইজ একটু ছোট ও স্মার্ট করা হয়েছে */
             font-weight: 700;
             color: #1a237e; /* পুলিশ নীল */
-            margin-top: 10px;
+            margin-top: 5px;
+            line-height: 1.3;
         }
 
         .sub-text {
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: #666;
-            margin-top: 5px;
+            margin-top: 3px;
         }
 
-        /* স্পিনার (Loading Spinner) */
+        /* স্পিনার (Loading Spinner) - ডিজাইন আরও সুন্দর করা হয়েছে */
         .spinner {
-            margin-top: 25px;
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #1a237e;
+            margin-top: 30px;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #1a237e; /* মেইন কালার */
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
 
         /* Iframe এর ডিজাইন */
@@ -86,7 +96,8 @@
             width: 100%;
             height: 100%;
             border: none;
-            display: none; /* শুরুতে লুকানো থাকবে */
+            display: none; /* শুরুতে লুকানো */
+            -webkit-overflow-scrolling: touch; /* আইওএস-এ স্মুথ স্ক্রলিং */
         }
 
         /* এনিমেশন */
@@ -96,19 +107,16 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+            from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- লোডিং স্ক্রিন সেকশন -->
     <div id="loading-screen">
-        <div class="logo-container">
-            <!-- নিচের src এ আপনার লোগোর লিংকটি বসাবেন -->
-            <!-- আমি এখানে উইকিপিডিয়া থেকে বাংলাদেশ পুলিশের একটি লোগোর লিংক দিয়েছি, আপনি চাইলে পরিবর্তন করতে পারেন -->
-            <img src="https://i.postimg.cc/28P4SX2q/image-181637.webp">
+        <div class="loading-content">
+            <img src="https://i.postimg.cc/28P4SX2q/image-181637.webp" alt="Police Logo" class="police-logo">
             
             <div class="loading-text">জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়া</div>
             <div class="sub-text">মিল ম্যানেজমেন্ট সিস্টেম</div>
@@ -117,30 +125,42 @@
         </div>
     </div>
 
-    <!-- আপনার অ্যাপের Iframe -->
-    <!-- নিচের src এ আপনার Google Apps Script এর Web App URL টি বসান -->
-    <iframe id="appFrame" src="https://script.google.com/macros/s/AKfycbz02I5cDJqkXLq12mlxbMAsD2HbRF1QU-ISUZxkvLUMdakRcfba0SPNpuqQIU4R6hvHBQ/exec" title="Meal Management App"></iframe>
+    <iframe id="appFrame" title="Meal Management App"></iframe>
 
     <script>
-        window.addEventListener('load', function() {
+        // আপনার গুগল অ্যাপস স্ক্রিপ্ট ওয়েব অ্যাপের বেস ইউআরএল।
+        // ভবিষ্যতের নতুন ডিপ্লয়মেন্টের জন্য শুধুমাত্র এই ইউআরএল-টি পরিবর্তন করবেন।
+        const baseAppUrl = "https://script.google.com/macros/s/AKfycbz02I5cDJqkXLq12mlxbMAsD2HbRF1QU-ISUZxkvLUMdakRcfba0SPNpuqQIU4R6hvHBQ/exec";
+
+        function loadApp() {
             const loadingScreen = document.getElementById('loading-screen');
             const iframe = document.getElementById('appFrame');
             
-            // Iframe লোড হওয়ার পর লোডিং স্ক্রিন সরানোর লজিক
+            // ক্যাশ বাস্টিং (Cache Busting) লজিক: 
+            // ইউআরএল-এর শেষে একটি টাইমস্ট্যাম্প যোগ করবে (যেমন: ?_=1682345678)
+            // এটি ব্রাউজারকে বাধ্য করবে নতুন পেজ লোড করতে, পুরনো ক্যাশ ভার্সন নয়।
+            const timestamp = new Date().getTime();
+            const urlWithCacheBusting = baseAppUrl + (baseAppUrl.includes('?') ? '&' : '?') + '_=' + timestamp;
+            
+            // নতুন এবং ফ্রেশ ইউআরএল-টি iframe এ সেট করা হচ্ছে।
+            iframe.src = urlWithCacheBusting;
+
+            // Iframe পুরোপুরি লোড হওয়ার পর লোডিং স্ক্রিন সরানোর লজিক
             iframe.onload = function() {
-                // অন্তত ২.৫ সেকেন্ড লোডিং স্ক্রিন দেখাবে যাতে ব্র্যান্ডিংটি দৃশ্যমান হয়
+                // অন্তত ১.৫ সেকেন্ড লোডিং স্ক্রিন দেখাবে ব্র্যান্ডিং দেখার জন্য।
                 setTimeout(() => {
                     loadingScreen.style.opacity = '0';
                     setTimeout(() => {
                         loadingScreen.style.display = 'none';
                         iframe.style.display = 'block';
-                    }, 500); // ফেড আউট এনিমেশন শেষে ডিলিট হবে
-                }, 2500);
+                    }, 500); // ফেড আউট এনিমেশন শেষে পুরোপুরি লুকানো হবে।
+                }, 1500); 
             };
 
-            // যদি কোনো কারণে iframe লোড না হয়, তবেও ৫ সেকেন্ড পর লোডিং সরিয়ে দেবে (ফলব্যাক)
+            // ফলব্যাক: যদি ৫ সেকেন্ড পরও iframe লোড না হয়, তবুও লোডিং সরিয়ে দেবে যাতে ইউজার এন্ট্রি করতে পারে।
             setTimeout(() => {
                 if(loadingScreen.style.display !== 'none') {
+                    console.log('Iframe load timeout, displaying app anyway.');
                     loadingScreen.style.opacity = '0';
                     setTimeout(() => {
                         loadingScreen.style.display = 'none';
@@ -148,7 +168,10 @@
                     }, 500);
                 }
             }, 5000);
-        });
+        }
+
+        // পেজ লোড হওয়ার পর অ্যাপ লোড করা শুরু হবে।
+        window.addEventListener('load', loadApp);
     </script>
 </body>
 </html>
