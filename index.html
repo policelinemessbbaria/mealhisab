@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়া</title>
+    
+    <!-- ফন্ট এবং আইকন লাইব্রেরি -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* বেসিক রিসেট */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f0f2f5;
+            overflow: hidden; /* স্ক্রল বার লুকানোর জন্য */
+        }
+
+        /* লোডিং স্ক্রিনের ডিজাইন */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* সবকিছুর ওপরে থাকবে */
+            transition: opacity 0.5s ease-out;
+        }
+
+        .logo-container {
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .police-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            /* লোগোর জন্য একটি সুন্দর শ্যাডো */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a237e; /* পুলিশ নীল */
+            margin-top: 10px;
+        }
+
+        .sub-text {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* স্পিনার (Loading Spinner) */
+        .spinner {
+            margin-top: 25px;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a237e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Iframe এর ডিজাইন */
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none; /* শুরুতে লুকানো থাকবে */
+        }
+
+        /* এনিমেশন */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- লোডিং স্ক্রিন সেকশন -->
+    <div id="loading-screen">
+        <div class="logo-container">
+            <!-- নিচের src এ আপনার লোগোর লিংকটি বসাবেন -->
+            <!-- আমি এখানে উইকিপিডিয়া থেকে বাংলাদেশ পুলিশের একটি লোগোর লিংক দিয়েছি, আপনি চাইলে পরিবর্তন করতে পারেন -->
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Coat_of_arms_of_Bangladesh_Police.svg/1200px-Coat_of_arms_of_Bangladesh_Police.svg.png" alt="Bangladesh Police Logo" class="police-logo">
+            
+            <div class="loading-text">জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়া</div>
+            <div class="sub-text">মিল ম্যানেজমেন্ট সিস্টেম</div>
+            
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- আপনার অ্যাপের Iframe -->
+    <!-- নিচের src এ আপনার Google Apps Script এর Web App URL টি বসান -->
+    <iframe id="appFrame" src="https://script.google.com/macros/s/AKfycbz02I5cDJqkXLq12mlxbMAsD2HbRF1QU-ISUZxkvLUMdakRcfba0SPNpuqQIU4R6hvHBQ/exec" title="Meal Management App"></iframe>
+
+    <script>
+        window.addEventListener('load', function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const iframe = document.getElementById('appFrame');
+            
+            // Iframe লোড হওয়ার পর লোডিং স্ক্রিন সরানোর লজিক
+            iframe.onload = function() {
+                // অন্তত ২.৫ সেকেন্ড লোডিং স্ক্রিন দেখাবে যাতে ব্র্যান্ডিংটি দৃশ্যমান হয়
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        iframe.style.display = 'block';
+                    }, 500); // ফেড আউট এনিমেশন শেষে ডিলিট হবে
+                }, 2500);
+            };
+
+            // যদি কোনো কারণে iframe লোড না হয়, তবেও ৫ সেকেন্ড পর লোডিং সরিয়ে দেবে (ফলব্যাক)
+            setTimeout(() => {
+                if(loadingScreen.style.display !== 'none') {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        iframe.style.display = 'block';
+                    }, 500);
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
