@@ -1,175 +1,1360 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>আমার মেস - জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়া</title>
-    
-    <!-- SEO Meta Tags (Google Search Console এর জন্য) -->
-    <meta name="description" content="জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়ার অফিসিয়াল মিল ম্যানেজমেন্ট সিস্টেম। এখানে মেসের সকল সদস্যের মিল হিসাব, বিল এবং ম্যানেজমেন্ট সিস্টেম ডিজিটাল পদ্ধতিতে পরিচালিত হয়।">
-    <meta name="keywords" content="আমার মেস, amar mess, পুলিশ লাইন মেস ব্রাহ্মণবাড়িয়া, police line mess brahmanbaria, মিল হিসাব ব্রাহ্মণবাড়িয়া, meal hisab brahmanbaria, mil hisab brahmanbaria, মেসের হিসাব ব্রাহ্মণবাড়িয়া, messer hisab brahmanbaria, ব্রাহ্মণবাড়িয়া পুলিশ লাইন, বাংলাদেশ পুলিশ মেস ম্যানেজমেন্ট">
-    <meta name="author" content="District Police Lines Mess Brahmanbaria">
-    <meta name="robots" content="index, follow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Meal Management System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
 
-    <!-- PWA Manifest Link (মোবাইলে ইন্সটল করার জন্য) -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1a237e">
+:root {
+    --primary-color: #0d6efd;
+    --bg-light: #f4f6f9;
+    --police-blue: #1a237e;
+}
 
-    <!-- Cache Control -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
+* {
+    box-sizing: border-box;
+}
 
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
-    <meta name="google-site-verification" content="DJMh8a8j5jNgw93mh7IoJf4KaoiCiW37BLfRUxpX0_U" />
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
 
-    <style>
-        /* বেসিক রিসেট */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; 
-        }
+body {
+    font-family: 'Hind Siliguri', sans-serif;
+    background-color: var(--bg-light);
+    margin: 0;
+    padding-bottom: 60px;
+    overflow-x: hidden;
+}
 
-        body, html {
-            height: 100%;
-            width: 100%;
-            font-family: 'Hind Siliguri', sans-serif;
-            background-color: #f7f9fc;
-            overflow: hidden; 
-            position: fixed; 
-        }
+body.calculator-open {
+    overflow: hidden;
+    touch-action: none;
+}
 
-        /* লোডিং স্ক্রিনের ডিজাইন */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease-out;
-        }
+/* =========================================================
+   LOADING SCREEN
+   ========================================================= */
+#loadingScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(ellipse at 50% 40%, #1b2838 0%, #0d1b2a 60%, #060e18 100%);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+}
 
-        .loading-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            max-width: 80%;
-            animation: fadeIn 1.2s ease-in-out;
-        }
+#loadingScreen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
 
-        .police-logo {
-            width: 80px;
-            height: auto;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-        }
+.loading-image-wrapper {
+    position: relative;
+    margin-bottom: 36px;
+}
 
-        .loading-text {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #1a237e;
-            margin-top: 5px;
-            line-height: 1.3;
-        }
+#loadingImage {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 0 60px rgba(79, 195, 247, 0.15), 0 8px 32px rgba(0,0,0,0.4);
+    border: 2px solid rgba(255,255,255,0.08);
+}
 
-        .sub-text {
-            font-size: 0.9rem;
-            color: #555;
-            margin-top: 5px;
-        }
+.loading-spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: #4fc3f7;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
 
-        .spinner {
-            margin-top: 30px;
-            width: 35px;
-            height: 35px;
-            border: 3px solid #e0e0e0;
-            border-top: 3px solid #1a237e;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
 
-        iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: none; 
-            -webkit-overflow-scrolling: touch; 
-        }
+.loading-text {
+    color: rgba(255,255,255,0.55);
+    margin-top: 18px;
+    font-size: 0.92rem;
+    letter-spacing: 0.3px;
+    animation: loadPulse 2s ease-in-out infinite;
+}
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+@keyframes loadPulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+.loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+}
+
+/* =========================================================
+   NOTICE POPUP MODAL
+   ========================================================= */
+#noticeModalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 50000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#noticeModalOverlay.visible {
+    display: flex;
+    opacity: 1;
+}
+
+.notice-modal-box {
+    background: #ffffff;
+    border-radius: 18px;
+    max-width: 440px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+    transform: translateY(30px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    opacity: 0;
+}
+
+#noticeModalOverlay.visible .notice-modal-box {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.notice-modal-header {
+    background: linear-gradient(135deg, #1a237e, #283593);
+    color: white;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.notice-modal-header i {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.notice-modal-body {
+    padding: 22px;
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.75;
+    max-height: 55vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.notice-modal-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.notice-modal-body::-webkit-scrollbar-thumb {
+    background: #c5cae9;
+    border-radius: 4px;
+}
+
+.notice-modal-footer {
+    padding: 14px 22px 18px;
+    text-align: center;
+    border-top: 1px solid #eef0f5;
+}
+
+.notice-close-btn {
+    background: linear-gradient(135deg, #1a237e, #283593);
+    color: white;
+    border: none;
+    padding: 12px 0;
+    width: 100%;
+    border-radius: 10px;
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.notice-close-btn:active {
+    transform: scale(0.97);
+}
+
+.notice-close-btn:hover {
+    box-shadow: 0 4px 16px rgba(26, 35, 126, 0.35);
+}
+
+/* =========================================================
+   MAIN UI
+   ========================================================= */
+.top-bar {
+    background-color: var(--police-blue);
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.top-bar h5 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.search-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-top: 10px;
+    text-align: center;
+}
+
+.search-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.info-card {
+    border-radius: 8px;
+    padding: 15px;
+    color: white;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100px;
+}
+
+.info-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.info-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.bg-name {
+    background-color: #ff9800;
+    color: #000;
+}
+
+.bg-meat {
+    background-color: #fff;
+    color: #ff9800;
+    border: 1px solid #ff9800;
+}
+
+.bg-status {
+    background-color: #388e3c;
+}
+
+.bg-meals {
+    background-color: #2196f3;
+    color: white;
+}
+
+.bg-amount {
+    background-color: #e57373;
+}
+
+.bg-ration {
+    background-color: #f8bbd0;
+    color: #000;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+    .calendar-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.day-card {
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid rgba(0,0,0,0.1);
+    font-size: 0.9rem;
+}
+
+.day-card:active {
+    transform: scale(0.98);
+}
+
+.day-date {
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.day-val {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.8rem;
+    color: #666;
+    border-top: 1px solid #eee;
+    z-index: 999;
+}
+
+#loader {
+    display: none;
+}
+
+#resultSection {
+    display: none;
+}
+
+.report-table-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.report-table th {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+}
+
+/* =========================================================
+   CUSTOM CALCULATOR MODAL
+   ========================================================= */
+.custom-calc-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.68);
+    z-index: 20000;
+    padding: 12px;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.custom-calc-modal.is-open {
+    display: flex;
+}
+
+.calc-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    max-height: calc(100vh - 24px);
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    animation: calculatorOpen 0.22s ease-out;
+    isolation: isolate;
+}
+
+@keyframes calculatorOpen {
+    from { transform: translateY(25px) scale(0.97); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.calc-header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background-color: var(--police-blue);
+    color: white;
+    border-radius: 14px 14px 0 0;
+    z-index: 5;
+}
+
+.calc-header h5 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.calc-close-btn {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.calc-close-btn:active {
+    transform: scale(0.92);
+}
+
+.calc-body {
+    padding: 16px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
+
+.calc-body label {
+    display: block;
+}
+
+/* ADJUSTED INPUT GROUP */
+.calc-input-group {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 10px;
+}
+
+.calc-input-group .calc-input-box {
+    margin-bottom: 0;
+    border-radius: 0;
+    flex: 1;
+}
+
+.calc-adj-btn {
+    background-color: #e9ecef;
+    border: 2px solid #d0d7e2;
+    color: #495057;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0 12px;
+    cursor: pointer;
+    transition: background-color 0.15s, transform 0.08s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Hind Siliguri', sans-serif;
+}
+
+.calc-adj-btn:active {
+    transform: scale(0.95);
+    background-color: #d0d7e2;
+}
+
+.calc-adj-btn:first-child {
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+}
+
+.calc-adj-btn:last-child {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+}
+
+.calc-input-box {
+    width: 100%;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+    background: #eef2f7;
+    border: 2px solid #d0d7e2;
+    color: #111;
+    height: 48px;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* CALCULATOR BUTTON GRID */
+.num-pad {
+    display: grid;
+    gap: 7px;
+    margin-bottom: 16px;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.meal-pad {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.ration-pad {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.num-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    min-width: 0;
+    height: 43px;
+    padding: 0;
+    border: 1px solid #cfd4da;
+    background-color: #f8f9fa;
+    color: #212529;
+    border-radius: 7px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 11;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+}
+
+.num-btn:hover {
+    background-color: #e2e6ea;
+}
+
+.num-btn:active {
+    transform: scale(0.94);
+    background-color: #d8dde2;
+}
+
+.num-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 5px rgba(13,110,253,0.3);
+}
+
+.calc-action-btn {
+    position: relative;
+    z-index: 20;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#calcResultArea {
+    font-weight: 600;
+    font-size: 1.05rem;
+    position: relative;
+    z-index: 20;
+    word-break: break-word;
+}
+
+/* Mobile calculator optimization */
+@media (max-width: 480px) {
+    .custom-calc-modal { padding: 8px; align-items: center; }
+    .calc-modal-content { max-width: 100%; max-height: calc(100vh - 16px); border-radius: 12px; }
+    .calc-header { padding: 12px 14px; }
+    .calc-header h5 { font-size: 1rem; }
+    .calc-body { padding: 13px; max-height: calc(100vh - 70px); }
+    .meal-pad { gap: 5px; }
+    .ration-pad { gap: 6px; }
+    .num-btn { height: 42px; font-size: 0.9rem; border-radius: 6px; }
+    .calc-input-box { height: 45px; font-size: 1.15rem; }
+    .calc-adj-btn { font-size: 0.85rem; padding: 0 8px; }
+}
+
+@media (max-width: 350px) {
+    .meal-pad { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .num-btn { height: 40px; font-size: 0.86rem; }
+}
+
+.swal2-container { z-index: 30000 !important; }
+
+</style>
 </head>
 <body>
 
-    <div id="loading-screen">
-        <div class="loading-content">
-            <img src="https://i.postimg.cc/28P4SX2q/image-181637.webp" alt="Police Logo" class="police-logo">
-            
-            <div class="loading-text">জেলা পুলিশ লাইন্স মেস</div>
-            <div class="sub-text">ব্রাহ্মণবাড়িয়া</div>
-            <div class="sub-text" style="font-size: 0.8rem; margin-top: 2px;">মিল ম্যানেজমেন্ট সিস্টেম</div>
-            
-            <div class="spinner"></div>
+<!-- =========================================================
+     LOADING SCREEN
+     ========================================================= -->
+<div id="loadingScreen">
+    <div class="loading-image-wrapper">
+        <!-- ⬇️ এই ছবির URL পরবর্তীতে আপনার ডিজাইন করা ছবি দিয়ে পরিবর্তন করুন -->
+        <img src="https://picsum.photos/seed/policemess2025/300/300.jpg" alt="Loading" id="loadingImage">
+    </div>
+    <div class="loading-spinner"></div>
+    <div class="loading-text">সার্ভারের সাথে সংযোগ স্থাপন হচ্ছে<span class="loading-dots"></span></div>
+</div>
+
+<!-- =========================================================
+     NOTICE POPUP MODAL
+     ========================================================= -->
+<div id="noticeModalOverlay">
+    <div class="notice-modal-box">
+        <div class="notice-modal-header">
+            <i class="fas fa-bullhorn"></i>
+            <span>নোটিশ বোর্ড</span>
+        </div>
+        <div class="notice-modal-body" id="noticeModalBody"></div>
+        <div class="notice-modal-footer">
+            <button type="button" class="notice-close-btn" id="noticeCloseBtn">বন্ধ করুন</button>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MAIN CONTENT
+     ========================================================= -->
+<div class="top-bar">
+    <h5>জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়া</h5>
+</div>
+
+<div class="container mb-5">
+
+    <div class="search-container">
+        <div class="search-icon">👨‍✈️</div>
+        <h4 class="mb-3">মিল হিসাব দেখুন</h4>
+
+        <div class="mb-3 text-start">
+            <label for="monthSelect" class="form-label fw-bold">মাস নির্বাচন করুন:</label>
+            <select class="form-select form-select-lg" id="monthSelect"><option value="" selected disabled>লোড হচ্ছে...</option></select>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="searchInput" class="form-label fw-bold">আপনার নাম্বার প্রবেশ করুন:</label>
+            <input type="number" class="form-control form-control-lg bg-light" id="searchInput" placeholder="ইংরেজিতে লিখুন - উদাহরণ 1014">
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary btn-lg fw-bold" id="searchBtn" onclick="handleSearch()">মিল দেখুন</button>
+            <button type="button" class="btn btn-outline-success btn-lg fw-bold" onclick="handleAnnualReport()">📊 বাৎসরিক হিসাব দেখুন</button>
+            <button type="button" class="btn btn-warning btn-lg fw-bold text-dark" onclick="handleCalculatorLogin()">🧮 মিল বিল ক্যালকুলেটর</button>
+        </div>
+
+        <div id="loader" class="mt-3">
+            <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+            <p class="mt-2">অনুসন্ধান চলছে...</p>
         </div>
     </div>
 
-    <iframe id="appFrame" title="Meal Management App"></iframe>
+    <div id="resultSection">
+        <h5 class="mt-4 mb-3 ps-1 border-start border-4 border-primary">সদস্যের তথ্য:</h5>
+        <div class="row g-2">
+            <div class="col-6"><div class="info-card bg-name"><span class="info-label" id="lblName">নাম</span><span class="info-value" id="resName">--</span></div></div>
+            <div class="col-6"><div class="info-card bg-meat"><span class="info-label" id="lblMeat">পছন্দের মাংস</span><span class="info-value" id="resMeat">--</span></div></div>
+            <div class="col-6"><div class="info-card bg-status"><span class="info-label" id="lblStatus">মেস স্ট্যাটাস</span><span class="info-value" id="resStatus">--</span></div></div>
+            <div class="col-6"><div class="info-card bg-meals"><span class="info-label" id="lblTotalMeals">মোট মিল সংখ্যা</span><span class="info-value" id="resTotalMeals">--</span></div></div>
+            <div class="col-6"><div class="info-card bg-amount"><span class="info-label" id="lblAmount">টাকার পরিমাণ</span><span class="info-value" id="resAmount">--</span></div></div>
+            <div class="col-6"><div class="info-card bg-ration"><span class="info-label" id="lblRation">রেশন সদস্য সংখ্যা</span><span class="info-value" id="resRation">--</span></div></div>
+        </div>
+        <h5 class="mt-4 mb-2 ps-1 border-start border-4 border-success">দৈনিক মিল বিবরণী <small>(সংশোধনের জন্য ক্লিক করুন)</small></h5>
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
 
-    <script>
-        const baseAppUrl = "https://script.google.com/macros/s/AKfycbyQzn7pmdLEQXy7E5Regh2PABjRkCnbXvb6x88cRf4xHAcyZg_O95t4X3lBBZzWQl2J/exec";
+</div>
 
-        function loadApp() {
-            const loadingScreen = document.getElementById('loading-screen');
-            const iframe = document.getElementById('appFrame');
-            
-            const timestamp = new Date().getTime();
-            const urlWithCacheBusting = baseAppUrl + (baseAppUrl.includes('?') ? '&' : '?') + '_=' + timestamp;
-            
-            iframe.src = urlWithCacheBusting;
+<!-- CALCULATOR MODAL -->
+<div id="customCalcModal" class="custom-calc-modal" aria-hidden="true">
+    <div class="calc-modal-content" role="dialog" aria-modal="true" aria-labelledby="calculatorTitle">
+        <div class="calc-header">
+            <h5 id="calculatorTitle">🧮 মিল বিল ক্যালকুলেটর</h5>
+            <button type="button" class="calc-close-btn" id="calcCloseBtn" aria-label="ক্যালকুলেটর বন্ধ করুন">&times;</button>
+        </div>
+        <div class="calc-body">
+            <label for="calcMealInput" class="form-label fw-bold mt-2">মোট মিল সংখ্যা (AL):</label>
+            <div class="calc-input-group">
+                <button type="button" class="calc-adj-btn" id="mealMinusHalf">- 0.5</button>
+                <input type="text" id="calcMealInput" class="form-control calc-input-box" readonly placeholder="নিচে ক্লিক করুন">
+                <button type="button" class="calc-adj-btn" id="mealPlusHalf">+ 0.5</button>
+            </div>
+            <div class="num-pad meal-pad" id="mealPad"></div>
 
-            iframe.onload = function() {
-                setTimeout(() => {
-                    loadingScreen.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                        iframe.style.display = 'block';
-                    }, 500);
-                }, 1500); 
+            <label for="calcRationInput" class="form-label fw-bold">রেশন সদস্য সংখ্যা (AM):</label>
+            <input type="text" id="calcRationInput" class="form-control calc-input-box" readonly placeholder="নিচে ক্লিক করুন">
+            <div class="num-pad ration-pad" id="rationPad"></div>
+
+            <button type="button" class="btn btn-primary btn-lg w-100 fw-bold mt-2 calc-action-btn" id="performCalcBtn">হিসাব করুন</button>
+            <div id="calcResultArea" class="alert mt-3 mb-0 text-center" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">&copy; <span id="year"></span> District Police Lines Mess, Brahmanbaria</div>
+
+<script>
+
+/* =========================================================
+   GOOGLE SCRIPT RUN POLYFILL
+   এটি ফ্রন্টএন্ডকে Google Apps Script ছাড়াই ব্যাকএন্ডের
+   সাথে যুক্ত করে। ব্যাকএন্ড URL নিচে বসান।
+   ========================================================= */
+(function () {
+    // ⬇️⬇️⬇️ আপনার Google Apps Script Web App এর Deploy লিংক এখানে বসান ⬇️⬇️⬇️
+    var BACKEND_URL = "https://script.google.com/macros/s/AKfycbyQzn7pmdLEQXy7E5Regh2PABjRkCnbXvb6x88cRf4xHAcyZg_O95t4X3lBBZzWQl2J/exec";
+
+    // যদি আগে থেকে google.script.run থাকে (Apps Script এনভায়রনমেন্ট), তাহলে পলিফিল লাগবে না
+    if (typeof window.google !== 'undefined' && typeof window.google.script !== 'undefined' && typeof window.google.script.run !== 'undefined') {
+        return;
+    }
+
+    if (typeof window.google === 'undefined') window.google = {};
+    if (typeof window.google.script === 'undefined') window.google.script = {};
+
+    function Runner() {
+        this._success = null;
+        this._failure = null;
+    }
+
+    Runner.prototype.withSuccessHandler = function (cb) {
+        this._success = cb;
+        return this;
+    };
+
+    Runner.prototype.withFailureHandler = function (cb) {
+        this._failure = cb;
+        return this;
+    };
+
+    Runner.prototype._execute = function (functionName, args) {
+        var self = this;
+
+        fetch(BACKEND_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                functionName: functionName,
+                args: args
+            })
+        })
+        .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        })
+        .then(function (data) {
+            if (data.error && data.success === undefined) {
+                if (self._failure) self._failure(new Error(data.error));
+            } else {
+                if (self._success) self._success(data);
+            }
+        })
+        .catch(function (err) {
+            if (self._failure) self._failure(err);
+        });
+    };
+
+    google.script.run = new Proxy(new Runner(), {
+        get: function (target, prop) {
+            if (prop in target) return target[prop];
+            return function () {
+                var args = Array.prototype.slice.call(arguments);
+                target._execute(prop, args);
+                return target;
             };
-
-            setTimeout(() => {
-                if(loadingScreen.style.display !== 'none') {
-                    console.log('Iframe load timeout, displaying app anyway.');
-                    loadingScreen.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                        iframe.style.display = 'block';
-                    }, 500);
-                }
-            }, 5000);
         }
+    });
+})();
 
-        window.addEventListener('load', loadApp);
-    </script>
+
+/* =========================================================
+   GLOBAL VARIABLES
+   ========================================================= */
+document.getElementById('year').textContent = new Date().getFullYear();
+var currentUser = {};
+var currentSelectedMonth = "";
+var globalSettings = {};
+var calculatorOpen = false;
+var loadingTimeout = null;
+
+
+/* =========================================================
+   PAGE LOAD
+   ========================================================= */
+window.addEventListener('load', function () {
+    generateCalcPads();
+    setupCalculatorEvents();
+    setupNoticeModalEvents();
+
+    // ১৫ সেকেন্ডের মধ্যে সার্ভার রেসপন্স না আসলে লোডিং স্ক্রিন সরিয়ে এরর দেখাবে
+    loadingTimeout = setTimeout(function () {
+        hideLoadingScreen();
+        Swal.fire({
+            icon: 'error',
+            title: 'সংযোগ ব্যর্থ',
+            text: 'সার্ভারের সাথে সংযোগ স্থাপন করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করে পুনরায় চেষ্টা করুন।',
+            confirmButtonText: 'আবার চেষ্টা করুন',
+            confirmButtonColor: '#1a237e'
+        }).then(function (result) {
+            if (result.isConfirmed) location.reload();
+        });
+    }, 15000);
+
+    loadMonths();
+    loadSettings();
+});
+
+
+/* =========================================================
+   LOADING SCREEN
+   ========================================================= */
+function hideLoadingScreen() {
+    if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
+    }
+    var ls = document.getElementById('loadingScreen');
+    ls.classList.add('fade-out');
+    setTimeout(function () {
+        ls.style.display = 'none';
+    }, 600);
+}
+
+
+/* =========================================================
+   NOTICE POPUP MODAL
+   ========================================================= */
+function setupNoticeModalEvents() {
+    document.getElementById('noticeCloseBtn').addEventListener('click', closeNoticeModal);
+    // বাইরে ক্লিক করলেও বন্ধ হবে
+    document.getElementById('noticeModalOverlay').addEventListener('click', function (e) {
+        if (e.target === this) closeNoticeModal();
+    });
+}
+
+function showNoticePopup(content) {
+    document.getElementById('noticeModalBody').innerHTML = content;
+    var overlay = document.getElementById('noticeModalOverlay');
+    // প্রথমে display:flex করতে হবে, তারপর opacity ট্রানজিশন কাজ করবে
+    overlay.style.display = 'flex';
+    // একটু দেরিতে visible ক্লাস যোগ করলে অ্যানিমেশন হবে
+    requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+            overlay.classList.add('visible');
+        });
+    });
+}
+
+function closeNoticeModal() {
+    var overlay = document.getElementById('noticeModalOverlay');
+    overlay.classList.remove('visible');
+    setTimeout(function () {
+        overlay.style.display = 'none';
+    }, 300);
+}
+
+
+/* =========================================================
+   SETTINGS — লোডিং স্ক্রিন ও নোটিশ পপআপ হ্যান্ডেল
+   ========================================================= */
+function loadSettings() {
+    google.script.run
+        .withSuccessHandler(function (settings) {
+            globalSettings = settings || {};
+
+            // লোডিং স্ক্রিন সরানো
+            hideLoadingScreen();
+
+            // নোটিশ থাকলে পপআপ দেখানো (একটু দেরিতে যাতে লোডিং স্ক্রিন সম্পূর্ণ চলে যায়)
+            if (settings && settings.notice && String(settings.notice).trim() !== "") {
+                setTimeout(function () {
+                    showNoticePopup(settings.notice);
+                }, 700);
+            }
+        })
+        .withFailureHandler(function (error) {
+            console.error("Settings Load Error:", error);
+            hideLoadingScreen();
+            Swal.fire({
+                icon: 'error',
+                title: 'সংযোগ ত্রুটি',
+                text: 'সার্ভার থেকে ডাটা আনা যায়নি। ব্যাকএন্ড URL সঠিক কিনা পরীক্ষা করুন।',
+                confirmButtonText: 'আবার চেষ্টা করুন',
+                confirmButtonColor: '#1a237e'
+            }).then(function (result) {
+                if (result.isConfirmed) location.reload();
+            });
+        })
+        .getSettings();
+}
+
+
+/* =========================================================
+   MONTHS
+   ========================================================= */
+function loadMonths() {
+    google.script.run
+        .withSuccessHandler(function (months) {
+            var select = document.getElementById('monthSelect');
+            select.innerHTML = "";
+            if (!months || months.length === 0) {
+                select.add(new Option("কোনো মাস পাওয়া যায়নি"));
+                return;
+            }
+            months.forEach(function (month) {
+                select.add(new Option(month, month));
+            });
+            if (months.length > 0) select.selectedIndex = months.length - 1;
+        })
+        .withFailureHandler(function (error) {
+            console.error("Month Load Error:", error);
+            Swal.fire('ত্রুটি', 'মাসের তালিকা লোড করা যায়নি।', 'error');
+        })
+        .getAvailableMonths();
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+function handleSearch() {
+    var id = document.getElementById('searchInput').value;
+    currentSelectedMonth = document.getElementById('monthSelect').value;
+    if (!id) { Swal.fire('ত্রুটি', 'দয়া করে নাম্বার প্রদান করুন', 'warning'); return; }
+    if (!currentSelectedMonth) { Swal.fire('ত্রুটি', 'দয়া করে একটি মাস নির্বাচন করুন', 'warning'); return; }
+
+    document.getElementById('searchBtn').disabled = true;
+    document.getElementById('loader').style.display = 'block';
+    document.getElementById('resultSection').style.display = 'none';
+
+    google.script.run.withSuccessHandler(showResults).withFailureHandler(showError).searchData(id, currentSelectedMonth);
+}
+
+
+/* =========================================================
+   ANNUAL REPORT
+   ========================================================= */
+function handleAnnualReport() {
+    Swal.fire({ title: 'শীঘ্রই আসছে!', text: 'বাৎসরিক হিসাব দেখার সুবিধাটি বর্তমানে ডেভেলপমেন্টাধীন রয়েছে।', icon: 'info', confirmButtonText: 'ঠিক আছে', confirmButtonColor: '#0d6efd' });
+}
+
+
+/* =========================================================
+   SHOW RESULTS
+   ========================================================= */
+function showResults(response) {
+    document.getElementById('searchBtn').disabled = false;
+    document.getElementById('loader').style.display = 'none';
+    if (response.error) { Swal.fire('দুঃখিত', response.error, 'error'); return; }
+
+    var data = response.data;
+    var meals = response.meals;
+    var labels = response.labels || {};
+    currentUser = data;
+
+    if (labels.name) document.getElementById('lblName').innerText = labels.name;
+    if (labels.meat) document.getElementById('lblMeat').innerText = labels.meat;
+    if (labels.status) document.getElementById('lblStatus').innerText = labels.status;
+    if (labels.totalMeals) document.getElementById('lblTotalMeals').innerText = labels.totalMeals;
+    if (labels.amount) document.getElementById('lblAmount').innerText = labels.amount;
+    if (labels.ration) document.getElementById('lblRation').innerText = labels.ration;
+
+    document.getElementById('resName').innerText = data.name;
+    document.getElementById('resMeat').innerText = data.meat;
+    document.getElementById('resStatus').innerText = data.status;
+    document.getElementById('resTotalMeals').innerText = data.totalMeals;
+    document.getElementById('resRation').innerText = data.rationMembers;
+
+    var amountVal = parseFloat(data.totalAmount);
+    var amountText = "";
+    if (amountVal > 0) amountText = "আপনার থেকে মেস পাবে " + amountVal + " টাকা";
+    else if (amountVal < 0) amountText = "আপনি মেস থেকে পাবেন " + Math.abs(amountVal) + " টাকা";
+    else amountText = "0 টাকা";
+    document.getElementById('resAmount').innerText = amountText;
+
+    var grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    meals.forEach(function (day) {
+        if (!day.dateHeader && day.value === "") return;
+        var div = document.createElement('div');
+        div.className = 'day-card shadow-sm';
+        div.style.backgroundColor = day.color;
+        div.style.color = getContrastYIQ(day.color);
+        div.innerHTML = '<span class="day-date">' + formatDateHeader(day.dateHeader) + '</span><span class="day-val">' + (day.value === "" ? "-" : day.value) + '</span>';
+        div.addEventListener('click', function () { openEditModal(day); });
+        grid.appendChild(div);
+    });
+    document.getElementById('resultSection').style.display = 'block';
+}
+
+function showError(error) {
+    document.getElementById('searchBtn').disabled = false;
+    document.getElementById('loader').style.display = 'none';
+    Swal.fire('সার্ভার ত্রুটি', 'চেষ্টা করুন আবার', 'error');
+}
+
+function formatDateHeader(header) {
+    if (!header) return "Date";
+    if (header.includes('/')) {
+        var p = header.split('/');
+        return p[0] + '<br><small>' + (p[1] || '').replace(',', '') + '</small>';
+    }
+    return header;
+}
+
+function getContrastYIQ(hexcolor) {
+    if (!hexcolor || hexcolor === '#ffffff') return 'black';
+    hexcolor = hexcolor.replace("#", "");
+    var r = parseInt(hexcolor.substr(0, 2), 16),
+        g = parseInt(hexcolor.substr(2, 2), 16),
+        b = parseInt(hexcolor.substr(4, 2), 16);
+    var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? 'black' : 'white';
+}
+
+
+/* =========================================================
+   EDIT MODAL
+   ========================================================= */
+function openEditModal(dayData) {
+    window.history.pushState({ modalOpen: true }, "Edit Modal", "#edit");
+    Swal.fire({
+        title: 'সংশোধন অনুরোধ',
+        html: '<div class="text-start"><p><strong>মাস:</strong> ' + currentSelectedMonth + '</p><p><strong>তারিখ:</strong> ' + dayData.dateHeader + '</p><p><strong>বর্তমান মিল:</strong> ' + dayData.value + '</p><label class="form-label">নতুন মিল:</label><input type="number" id="newValue" class="form-control mb-2" placeholder="উদাহরণ: 1 বা 0.5 বা 0"><label class="form-label">কারণ:</label><textarea id="reason" class="form-control" placeholder="বিবরণ দিন..."></textarea></div>',
+        showCancelButton: true,
+        confirmButtonText: 'জমা দিন',
+        cancelButtonText: 'বাতিল',
+        confirmButtonColor: '#0d6efd',
+        preConfirm: function () {
+            var n = document.getElementById('newValue').value;
+            var r = document.getElementById('reason').value;
+            if (!n || !r) { Swal.showValidationMessage('অনুগ্রহ করে নতুন মান এবং কারণ লিখুন'); return false; }
+            return { newVal: n, reason: r };
+        }
+    }).then(function (result) {
+        if (window.history.state && window.history.state.modalOpen) window.history.back();
+        if (result.isConfirmed) submitRequest(dayData, result.value);
+    });
+}
+
+window.addEventListener('popstate', function () { if (Swal.isVisible()) Swal.close(); });
+
+function submitRequest(dayData, inputData) {
+    Swal.fire({ title: 'অপেক্ষা করুন...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+    var reqPayload = {
+        id: currentUser.number,
+        name: currentUser.name,
+        monthName: currentSelectedMonth,
+        dateHeader: dayData.dateHeader,
+        oldValue: dayData.value,
+        newValue: inputData.newVal,
+        reason: inputData.reason
+    };
+    google.script.run
+        .withSuccessHandler(function (res) {
+            Swal.fire(res.success ? 'সফল!' : 'ব্যর্থ', res.message, res.success ? 'success' : 'error');
+        })
+        .withFailureHandler(function (error) {
+            Swal.fire('ত্রুটি', 'সংশোধনের অনুরোধ পাঠানো যায়নি।', 'error');
+        })
+        .submitCorrection(reqPayload);
+}
+
+
+/* =========================================================
+   CALCULATOR LOGIN & UI LOGIC
+   ========================================================= */
+function handleCalculatorLogin() {
+    Swal.fire({
+        title: 'এডমিন ভেরিফিকেশন',
+        text: 'ক্যালকুলেটর ব্যবহার করতে এডমিন পাসওয়ার্ড দিন:',
+        input: 'password',
+        inputPlaceholder: 'পাসওয়ার্ড প্রবেশ করুন',
+        showCancelButton: true,
+        confirmButtonText: 'প্রবেশ করুন',
+        cancelButtonText: 'বাতিল',
+        confirmButtonColor: '#0d6efd',
+        preConfirm: function (pass) {
+            if (!pass) { Swal.showValidationMessage('পাসওয়ার্ড দেওয়া হয়নি!'); return false; }
+            var correctPassword = "";
+            if (globalSettings) {
+                for (var key in globalSettings) {
+                    var k = key.toString().trim().toLowerCase();
+                    if (k === "admin_password" || k === "password" || k === "admin password" || k === "adminpassword") {
+                        correctPassword = String(globalSettings[key]).trim();
+                        break;
+                    }
+                }
+            }
+            if (!correctPassword) { Swal.showValidationMessage('Settings শিট থেকে পাসওয়ার্ড পাওয়া যায়নি!'); return false; }
+            if (String(pass).trim() !== correctPassword) { Swal.showValidationMessage('ভুল পাসওয়ার্ড!'); return false; }
+            return true;
+        }
+    }).then(function (result) {
+        if (result.isConfirmed) openCustomCalculator();
+    });
+}
+
+function generateCalcPads() {
+    var mealPad = document.getElementById('mealPad');
+    var rationPad = document.getElementById('rationPad');
+    mealPad.innerHTML = "";
+    rationPad.innerHTML = "";
+
+    for (var i = 0; i <= 31; i++) {
+        (function (val) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'num-btn';
+            btn.dataset.value = val;
+            btn.textContent = val;
+            btn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); selectMealNumber(val, this); }, false);
+            btn.addEventListener('touchend', function (e) { e.stopPropagation(); }, false);
+            mealPad.appendChild(btn);
+        })(i);
+    }
+
+    for (var j = 0; j <= 4; j++) {
+        (function (val) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'num-btn';
+            btn.dataset.value = val;
+            btn.textContent = val;
+            btn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); selectRationNumber(val, this); }, false);
+            btn.addEventListener('touchend', function (e) { e.stopPropagation(); }, false);
+            rationPad.appendChild(btn);
+        })(j);
+    }
+}
+
+function selectMealNumber(value, button) {
+    document.getElementById('calcMealInput').value = value;
+    document.querySelectorAll('#mealPad .num-btn').forEach(function (btn) { btn.classList.remove('active'); });
+    button.classList.add('active');
+}
+
+function selectRationNumber(value, button) {
+    document.getElementById('calcRationInput').value = value;
+    document.querySelectorAll('#rationPad .num-btn').forEach(function (btn) { btn.classList.remove('active'); });
+    button.classList.add('active');
+}
+
+function setupCalculatorEvents() {
+    var modal = document.getElementById('customCalcModal');
+    document.getElementById('calcCloseBtn').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); closeCalculatorModal(); }, false);
+    document.getElementById('performCalcBtn').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); performCalculation(); }, false);
+    document.getElementById('mealMinusHalf').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); adjustMealByHalf(-0.5); }, false);
+    document.getElementById('mealPlusHalf').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); adjustMealByHalf(0.5); }, false);
+    modal.addEventListener('click', function (e) { if (e.target === modal) { e.preventDefault(); e.stopPropagation(); } }, false);
+    document.querySelector('.calc-modal-content').addEventListener('click', function (e) { e.stopPropagation(); }, false);
+}
+
+function adjustMealByHalf(amount) {
+    var input = document.getElementById('calcMealInput');
+    var currentVal = parseFloat(input.value) || 0;
+    var newVal = currentVal + amount;
+    if (newVal < 0) newVal = 0;
+    input.value = newVal;
+    document.querySelectorAll('#mealPad .num-btn').forEach(function (btn) { btn.classList.remove('active'); });
+}
+
+function openCustomCalculator() {
+    document.getElementById('calcMealInput').value = "";
+    document.getElementById('calcRationInput').value = "";
+    document.getElementById('calcResultArea').style.display = 'none';
+    document.getElementById('calcResultArea').innerHTML = "";
+    document.getElementById('calcResultArea').className = "alert mt-3 mb-0 text-center";
+    document.querySelectorAll('#customCalcModal .num-btn').forEach(function (btn) { btn.classList.remove('active'); });
+    document.getElementById('customCalcModal').classList.add('is-open');
+    document.getElementById('customCalcModal').setAttribute('aria-hidden', 'false');
+    calculatorOpen = true;
+    document.body.classList.add('calculator-open');
+    var body = document.querySelector('.calc-body');
+    if (body) body.scrollTop = 0;
+}
+
+function closeCalculatorModal() {
+    document.getElementById('customCalcModal').classList.remove('is-open');
+    document.getElementById('customCalcModal').setAttribute('aria-hidden', 'true');
+    calculatorOpen = false;
+    document.body.classList.remove('calculator-open');
+    document.getElementById('calcMealInput').value = "";
+    document.getElementById('calcRationInput').value = "";
+    document.getElementById('calcResultArea').style.display = 'none';
+    document.querySelectorAll('#customCalcModal .num-btn').forEach(function (btn) { btn.classList.remove('active'); });
+}
+
+function performCalculation() {
+    var AL = parseFloat(document.getElementById('calcMealInput').value);
+    var AM = parseInt(document.getElementById('calcRationInput').value, 10);
+    if (isNaN(AL)) { showCalculatorWarning('দয়া করে মিল সংখ্যা সিলেক্ট করুন'); return; }
+    if (isNaN(AM)) { showCalculatorWarning('দয়া করে রেশন সদস্য সংখ্যা সিলেক্ট করুন'); return; }
+
+    var res = calculateMealBill(AL, AM);
+    var resultDiv = document.getElementById('calcResultArea');
+    var message = "", alertClass = "alert-info";
+
+    if (res.finalAmount > 0) {
+        message = 'আপনার থেকে মেস পাবে: <b class="text-danger">' + formatMoney(res.finalAmount) + ' টাকা</b>';
+        alertClass = "alert-warning";
+    } else if (res.finalAmount < 0) {
+        message = 'আপনি মেস থেকে পাবেন: <b class="text-success">' + formatMoney(Math.abs(res.finalAmount)) + ' টাকা</b>';
+        alertClass = "alert-success";
+    } else {
+        message = 'আপনার কোনো বকেয়া বা রিফান্ড নেই <b>(0 টাকা)</b>';
+        alertClass = "alert-primary";
+    }
+
+    resultDiv.className = 'alert mt-3 mb-0 text-center ' + alertClass;
+    resultDiv.innerHTML = message;
+    resultDiv.style.display = 'block';
+
+    setTimeout(function () {
+        var body = document.querySelector('.calc-body');
+        if (body) body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
+    }, 50);
+}
+
+function showCalculatorWarning(message) {
+    Swal.fire({ toast: true, position: 'top-end', icon: 'warning', title: message, showConfirmButton: false, timer: 1700, timerProgressBar: true });
+}
+
+function formatMoney(value) {
+    var num = Number(value);
+    if (!Number.isFinite(num)) return "0";
+    if (Number.isInteger(num)) return num.toLocaleString('en-US');
+    return num.toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+
+
+/* =========================================================
+   DYNAMIC MEAL BILL CALCULATION
+   ========================================================= */
+function getSettingNumber(key, defaultValue) {
+    if (globalSettings && globalSettings[key] !== undefined && globalSettings[key] !== "") {
+        var val = parseFloat(globalSettings[key]);
+        return isNaN(val) ? defaultValue : val;
+    }
+    return defaultValue;
+}
+
+function calculateMealBill(AL, AM) {
+
+    var baseRate = getSettingNumber('calc_base_rate', 125);
+    var maxMeals = getSettingNumber('calc_max_meals', 30);
+    var limitCheck = getSettingNumber('calc_limit_check', 30);
+
+    var m1_threshold = getSettingNumber('calc_m1_threshold', 10.5);
+    var m1_rate_above = getSettingNumber('calc_m1_rate_above', 30);
+    var m1_ded_above = getSettingNumber('calc_m1_ded_above', 400);
+    var m1_ded_below = getSettingNumber('calc_m1_ded_below', 1500);
+    var m1_floor = getSettingNumber('calc_m1_floor', -400);
+
+    var m2_threshold = getSettingNumber('calc_m2_threshold', 16);
+    var m2_rate_above = getSettingNumber('calc_m2_rate_above', 45);
+    var m2_ded_below = getSettingNumber('calc_m2_ded_below', 2600);
+    var m2_floor = getSettingNumber('calc_m2_floor', 0);
+
+    var m3_threshold = getSettingNumber('calc_m3_threshold', 17);
+    var m3_rate_above = getSettingNumber('calc_m3_rate_above', 45);
+    var m3_bonus_above = getSettingNumber('calc_m3_bonus_above', 1000);
+    var m3_ded_below = getSettingNumber('calc_m3_ded_below', 3800);
+    var m3_floor = getSettingNumber('calc_m3_floor', 1000);
+
+    var m4_threshold = getSettingNumber('calc_m4_threshold', 23.5);
+    var m4_rate_above = getSettingNumber('calc_m4_rate_above', 45);
+    var m4_bonus_above = getSettingNumber('calc_m4_bonus_above', 1500);
+    var m4_ded_below = getSettingNumber('calc_m4_ded_below', 4700);
+    var m4_floor = getSettingNumber('calc_m4_floor', 1500);
+
+    var special_ration = getSettingNumber('calc_special_ration', 1);
+    var special_meal = getSettingNumber('calc_special_meal', 17);
+
+    var AT = AL * baseRate;
+
+    var AP = (AL >= m1_threshold)
+        ? ((maxMeals - AL) * m1_rate_above - m1_ded_above)
+        : (AL * baseRate - m1_ded_below);
+
+    var AQ = (AL >= m2_threshold)
+        ? ((maxMeals - AL) * m2_rate_above)
+        : (AL * baseRate - m2_ded_below);
+
+    var AR = (AL >= m3_threshold)
+        ? ((maxMeals - AL) * m3_rate_above + m3_bonus_above)
+        : (AL * baseRate - m3_ded_below);
+
+    var AS = (AL >= m4_threshold)
+        ? ((maxMeals - AL) * m4_rate_above + m4_bonus_above)
+        : (AL * baseRate - m4_ded_below);
+
+    var AO = 0;
+
+    if (AM === 1) {
+        AO = (AL > limitCheck && AP < m1_floor) ? m1_floor : AP;
+    } else if (AM === 2) {
+        AO = (AL > limitCheck && AQ < m2_floor) ? m2_floor : AQ;
+    } else if (AM === 3) {
+        AO = (AL > limitCheck && AR < m3_floor) ? m3_floor : AR;
+    } else if (AM === 4) {
+        AO = (AL > limitCheck && AS < m4_floor) ? m4_floor : AS;
+    } else if (AM === 0) {
+        AO = AT;
+    }
+
+    var AN = 0;
+
+    if (AM === 0 || (AM === special_ration && AL >= special_meal)) {
+        AN = Math.abs(AO);
+    } else {
+        AN = -Math.abs(AO);
+    }
+
+    return {
+        finalAmount: AN
+    };
+}
+
+</script>
 </body>
 </html>
