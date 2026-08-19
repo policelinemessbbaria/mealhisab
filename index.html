@@ -1143,6 +1143,100 @@ body.calculator-open {
 
 }
 
+
+/* =========================================================
+   NOTICE POPUP — FULL-WIDTH SCROLLABLE
+   =========================================================
+   ডানে বামে যতটা জায়গা পারা যায় নোটিশ দেখাবে।
+   লেখা বড় হলে শুধু লেখা স্ক্রোল হবে,
+   "বন্ধ করুন" বাটন নিচে স্থির (sticky) থাকবে।
+   ========================================================= */
+
+.swal2-popup.notice-popup {
+
+    max-height: 88vh !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    overflow: hidden !important;
+
+}
+
+
+.swal2-popup.notice-popup .swal2-icon,
+
+.swal2-popup.notice-popup .swal2-header,
+
+.swal2-popup.notice-popup .swal2-image,
+
+.swal2-popup.notice-popup .swal2-close {
+
+    flex-shrink: 0 !important;
+
+}
+
+
+.swal2-popup.notice-popup .swal2-html-container {
+
+    flex: 1 1 0% !important;
+
+    overflow-y: auto !important;
+
+    min-height: 0 !important;
+
+    text-align: left !important;
+
+    line-height: 1.85 !important;
+
+    font-size: 1rem !important;
+
+    -webkit-overflow-scrolling: touch;
+
+    overscroll-behavior: contain;
+
+    padding: 10px 0 !important;
+
+}
+
+
+/* স্ক্রোলবার সুন্দর করা */
+
+.swal2-popup.notice-popup .swal2-html-container::-webkit-scrollbar {
+
+    width: 5px;
+
+}
+
+
+.swal2-popup.notice-popup .swal2-html-container::-webkit-scrollbar-track {
+
+    background: transparent;
+
+}
+
+
+.swal2-popup.notice-popup .swal2-html-container::-webkit-scrollbar-thumb {
+
+    background-color: rgba(0,0,0,.18);
+
+    border-radius: 10px;
+
+}
+
+
+.swal2-popup.notice-popup .swal2-actions {
+
+    flex-shrink: 0 !important;
+
+    padding-top: 1rem !important;
+
+    margin-top: 0 !important;
+
+}
+
+
 </style>
 
 </head>
@@ -1721,7 +1815,7 @@ const API_URL =
  * LOADING SCREEN IMAGE
  * ==========================================================
  *
- * পরে নিজের image URL এখানে বসিয়ে দেবে।
+ * পরে নিজের image URL এখানে বসিয়ে দেবে।
  *
  * বর্তমানটি অনলাইন Bangladesh Police emblem।
  *
@@ -1781,7 +1875,7 @@ function apiGet(functionName, args) {
 
             reject(
                 new Error(
-                    'API_URL এখনো সেট করা হয়নি।'
+                    'API_URL এখনো সেট করা হয়নি।'
                 )
             );
 
@@ -1932,7 +2026,7 @@ function apiGet(functionName, args) {
 /*
  * Correction request-এর জন্য POST।
  *
- * no-cors ব্যবহার করার কারণে browser response পড়তে পারবে না,
+ * no-cors ব্যবহার করার কারণে browser response পড়তে পারবে না,
  * কিন্তু Apps Script request receive করে কাজটি সম্পন্ন করবে।
  */
 
@@ -1949,7 +2043,7 @@ async function apiPost(
     ) {
 
         throw new Error(
-            'API_URL এখনো সেট করা হয়নি।'
+            'API_URL এখনো সেট করা হয়নি।'
         );
 
     }
@@ -2057,7 +2151,7 @@ async function initializeApplication() {
     try {
 
         /*
-         * একই সময়ে Settings এবং Months load হবে।
+         * একই সময়ে Settings এবং Months load হবে।
          */
 
         const results =
@@ -2103,7 +2197,7 @@ async function initializeApplication() {
 
 
         /*
-         * Connection successful হওয়ার
+         * Connection successful হওয়ার
          * পরে notice popup হবে।
          */
 
@@ -2122,7 +2216,7 @@ async function initializeApplication() {
 
 
         status.textContent =
-            'Google Sheet-এর সাথে সংযোগ স্থাপন করা যায়নি।';
+            'Google Sheet-এর সাথে সংযোগ স্থাপন করা যায়নি।';
 
 
         errorBox.style.display =
@@ -2155,7 +2249,7 @@ function loadMonthsIntoUI(months) {
 
         select.add(
             new Option(
-                "কোনো মাস পাওয়া যায়নি"
+                "কোনো মাস পাওয়া যায়নি"
             )
         );
 
@@ -2186,6 +2280,9 @@ function loadMonthsIntoUI(months) {
 
 /* =========================================================
    NOTICE POPUP
+   =========================================================
+   ডানে বামে সর্বোচ্চ জায়গা নেবে,
+   লেখা স্ক্রোল হবে, বাটন নিচে স্থির থাকবে।
    ========================================================= */
 
 function showNoticePopup() {
@@ -2210,13 +2307,7 @@ function showNoticePopup() {
         title: '📢 নোটিশ',
 
         html:
-            '<div style="' +
-            'text-align:left;' +
-            'line-height:1.8;' +
-            'font-size:1rem;' +
-            '">' +
-            globalSettings.notice +
-            '</div>',
+            globalSettings.notice,
 
         confirmButtonText:
             'বন্ধ করুন',
@@ -2228,9 +2319,13 @@ function showNoticePopup() {
 
         allowEscapeKey: true,
 
-        width: '92%',
+        width: '96%',
 
         padding: '1.5rem',
+
+        customClass: {
+            popup: 'notice-popup'
+        },
 
         showClass: {
 
@@ -2403,7 +2498,7 @@ async function handleAnnualReport() {
                 response &&
                 response.error
                     ? response.error
-                    : 'বার্ষিক হিসাব পাওয়া যায়নি।',
+                    : 'বার্ষিক হিসাব পাওয়া যায়নি।',
                 'error'
             );
 
@@ -2419,7 +2514,7 @@ async function handleAnnualReport() {
 
             Swal.fire(
                 'তথ্য নেই',
-                'এই নাম্বারের কোনো বাৎসরিক তথ্য পাওয়া যায়নি।',
+                'এই নাম্বারের কোনো বাৎসরিক তথ্য পাওয়া যায়নি।',
                 'info'
             );
 
@@ -2528,7 +2623,7 @@ async function handleAnnualReport() {
 
         Swal.fire(
             'ত্রুটি',
-            'বাৎসরিক হিসাব লোড করা যায়নি।',
+            'বাৎসরিক হিসাব লোড করা যায়নি।',
             'error'
         );
 
@@ -2563,7 +2658,7 @@ function showResults(response) {
             response &&
             response.error
                 ? response.error
-                : 'তথ্য পাওয়া যায়নি।',
+                : 'তথ্য পাওয়া যায়নি।',
             'error'
         );
 
@@ -3127,7 +3222,7 @@ async function submitRequest(
                 'সফল!',
 
             text:
-                'আপনার সংশোধনের অনুরোধ সফলভাবে জমা দেওয়া হয়েছে।',
+                'আপনার সংশোধনের অনুরোধ সফলভাবে জমা দেওয়া হয়েছে।',
 
             icon:
                 'success',
@@ -3152,7 +3247,7 @@ async function submitRequest(
 
             'ত্রুটি',
 
-            'সংশোধনের অনুরোধ পাঠানো যায়নি।',
+            'সংশোধনের অনুরোধ পাঠানো যায়নি।',
 
             'error'
 
@@ -3175,13 +3270,13 @@ function handleCalculatorLogin() {
             'এডমিন ভেরিফিকেশন',
 
         text:
-            'ক্যালকুলেটর ব্যবহার করতে এডমিন পাসওয়ার্ড দিন:',
+            'ক্যালকুলেটর ব্যবহার করতে এডমিন পাসওয়ার্ড দিন:',
 
         input:
             'password',
 
         inputPlaceholder:
-            'পাসওয়ার্ড প্রবেশ করুন',
+            'পাসওয়ার্ড প্রবেশ করুন',
 
         showCancelButton:
             true,
@@ -3202,7 +3297,7 @@ function handleCalculatorLogin() {
                 if (!pass) {
 
                     Swal.showValidationMessage(
-                        'পাসওয়ার্ড দেওয়া হয়নি!'
+                        'পাসওয়ার্ড দেওয়া হয়নি!'
                     );
 
                     return false;
@@ -3260,7 +3355,7 @@ function handleCalculatorLogin() {
                 if (!correctPassword) {
 
                     Swal.showValidationMessage(
-                        'Settings শিট থেকে পাসওয়ার্ড পাওয়া যায়নি!'
+                        'Settings শিট থেকে পাসওয়ার্ড পাওয়া যায়নি!'
                     );
 
                     return false;
@@ -3274,7 +3369,7 @@ function handleCalculatorLogin() {
                 ) {
 
                     Swal.showValidationMessage(
-                        'ভুল পাসওয়ার্ড!'
+                        'ভুল পাসওয়ার্ড!'
                     );
 
                     return false;
@@ -3835,7 +3930,7 @@ function performCalculation() {
     if (isNaN(AL)) {
 
         showCalculatorWarning(
-            'দয়া করে মিল সংখ্যা সিলেক্ট করুন'
+            'দয়া করে মিল সংখ্যা সিলেক্ট করুন'
         );
 
         return;
@@ -3846,7 +3941,7 @@ function performCalculation() {
     if (isNaN(AM)) {
 
         showCalculatorWarning(
-            'দয়া করে রেশন সদস্য সংখ্যা সিলেক্ট করুন'
+            'দয়া করে রেশন সদস্য সংখ্যা সিলেক্ট করুন'
         );
 
         return;
@@ -3910,7 +4005,7 @@ function performCalculation() {
     else {
 
         message =
-            `আপনার কোনো বকেয়া বা রিফান্ড নেই
+            `আপনার কোনো বকেয়া বা রিফান্ড নেই
             <b>(0 টাকা)</b>`;
 
         alertClass =
