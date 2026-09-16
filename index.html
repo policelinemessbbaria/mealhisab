@@ -562,6 +562,13 @@ body.calculator-open {
 }
 
 
+#memberInfoHeading {
+
+    scroll-margin-top: 70px;
+
+}
+
+
 /* =========================================================
    REPORT TABLE
    ========================================================= */
@@ -1263,7 +1270,7 @@ body.calculator-open {
         </h1>
 
         <div class="connection-location">
-            ব্রাহ্মণবাড়িয়া
+            ব্রাহ্মণবাড়িয়া
         </div>
 
         <div class="connection-subtitle">
@@ -1287,7 +1294,7 @@ body.calculator-open {
             <div class="alert alert-danger">
 
                 <strong>
-                    সংযোগ স্থাপন করা যায়নি।
+                    সংযোগ স্থাপন করা যায়নি।
                 </strong>
 
                 <br>
@@ -1319,7 +1326,7 @@ body.calculator-open {
 <div class="top-bar">
 
     <h5>
-        জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়া
+        জেলা পুলিশ লাইন্স মেস, ব্রাহ্মণবাড়িয়া
     </h5>
 
 </div>
@@ -1453,7 +1460,7 @@ body.calculator-open {
 
 <div id="resultSection">
 
-    <h5 class="mt-4 mb-3 ps-1 border-start border-4 border-primary">
+    <h5 id="memberInfoHeading" class="mt-4 mb-3 ps-1 border-start border-4 border-primary">
 
         সদস্যের তথ্য:
 
@@ -1619,7 +1626,7 @@ body.calculator-open {
         দৈনিক মিল বিবরণী
 
         <small>
-            (সংশোধনের জন্য ক্লিক করুন)
+            (কোনো নির্দিষ্ট তারিখে আপনার মিলের হিসাব কম বা বেশি দেখালে, সংশোধন করতে উক্ত তারিখের ওপর ক্লিক করে আবেদন পাঠাতে পারেন।)
         </small>
 
     </h5>
@@ -2869,6 +2876,25 @@ function showResults(response) {
         'resultSection'
     ).style.display =
         'block';
+
+
+    const infoHeading =
+        document.getElementById(
+            'memberInfoHeading'
+        );
+
+
+    if (infoHeading) {
+
+        infoHeading.scrollIntoView({
+
+            behavior: 'smooth',
+
+            block: 'start'
+
+        });
+
+    }
 
 }
 
