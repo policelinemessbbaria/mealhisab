@@ -8875,6 +8875,7 @@ const FACE_ARC_TEMPLATE = [
 
 let faceEngine = 'dlib';      // 'insight' (নতুন) বা 'dlib' (পুরনো — নতুন মডেল লোড না হলে)
 let faceEmbModel = null;
+let faceForceTry = false;    // যাচাইয়ের সময় নতুন মডেল জোর করে লোড করা
 let faceDbAll = [];           // সব ফেস আইডি (সব ইঞ্জিনের)
 
 // ---- টিউনিং (ভুল চিনলে/না চিনলে এই মানগুলো বদলান) ----
@@ -9484,7 +9485,7 @@ function faceLoadLib() {
         // নতুন (বেশি নির্ভুল) মডেল চেষ্টা; না পেলে পুরনো মডেল
         faceEngine = 'dlib';
 
-        if (tokenSettings.faceEngine !== 'dlib') {
+        if (tokenSettings.faceEngine !== 'dlib' || faceForceTry) {
 
             for (let i = 0; i < FACE_EMB_BASES.length && !faceEmbModel; i++) {
 
@@ -11822,6 +11823,19 @@ async function faceModelCheck() {
     const box = tokenEl('tokenFaceEngineInfo');
 
     await faceLoadLib().catch(function() {});
+
+    // আগের যাচাইয়ে পুরনো মডেল বেছে থাকলেও এবার নতুন মডেল জোর করে লোড করে দেখা
+    if (!faceEmbModel) {
+
+        faceForceTry = true;
+        faceLibPromise = null;
+        faceModelsReady = false;
+
+        await faceLoadLib().catch(function() {});
+
+        faceForceTry = false;
+
+    }
 
     if (!faceEmbModel) {
 
