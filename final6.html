@@ -8875,6 +8875,7 @@ const FACE_ARC_TEMPLATE = [
 
 let faceEngine = 'dlib';      // 'insight' (নতুন) বা 'dlib' (পুরনো — নতুন মডেল লোড না হলে)
 let faceEmbModel = null;
+let faceMean = null;          // নতুন মডেলের 'গড় মুখ' (Float32Array(512)) — সবার ভেক্টর থেকে এটি বাদ দিয়ে তুলনা হয়
 let faceForceTry = false;    // যাচাইয়ের সময় নতুন মডেল জোর করে লোড করা
 let faceDbAll = [];           // সব ফেস আইডি (সব ইঞ্জিনের)
 
@@ -9038,6 +9039,13 @@ function faceParseDb(rows) {
     });
 
     return out;
+
+}
+
+
+function faceMeanSet(m) {
+
+    if (m && m.length === 512) faceMean = Float32Array.from(m, function(x) { return x / 10000; });
 
 }
 
@@ -9284,7 +9292,7 @@ function faceNormMode() {
 }
 
 
-async function faceEmbedCanvas(cv, mode) {
+async function faceEmbedCanvas(cv, mode, center) {
 
     const tf = faceapi.tf;
 
@@ -9306,15 +9314,35 @@ async function faceEmbedCanvas(cv, mode) {
 
     out.dispose();
 
+    return faceNormalize512(data, center === false ? null : faceMean);
+
+}
+
+
+// L2 স্বাভাবিক করা → 'গড় মুখ' বাদ → আবার L2 (গড় বাদ দিলেই ভিন্ন মানুষ আলাদা হয়)
+function faceNormalize512(data, mean) {
+
+    const v = new Float32Array(data.length);
+
     let n = 0;
 
     for (let i = 0; i < data.length; i++) n += data[i] * data[i];
 
     n = Math.sqrt(n) || 1;
 
-    const v = new Float32Array(data.length);
-
     for (let i = 0; i < data.length; i++) v[i] = data[i] / n;
+
+    if (mean) {
+
+        let m = 0;
+
+        for (let i = 0; i < v.length; i++) { v[i] -= mean[i]; m += v[i] * v[i]; }
+
+        m = Math.sqrt(m) || 1;
+
+        for (let i = 0; i < v.length; i++) v[i] /= m;
+
+    }
 
     return v;
 
@@ -9329,6 +9357,8 @@ async function faceDetectFull(v) {
         return faceapi.detectAllFaces(v, faceOpts()).withFaceLandmarks(true).withFaceDescriptors();
 
     }
+
+    if (!faceMean) throw new Error('গড় মুখ পাওয়া যায়নি — অ্যাডমিন "নতুন মডেল যাচাই" চালান');
 
     const res = await faceapi.detectAllFaces(v, faceOpts()).withFaceLandmarks(true);
 
@@ -9497,7 +9527,10 @@ function faceLoadLib() {
 
             }
 
-            if (faceEmbModel) {
+            // 'গড় মুখ' না থাকলে নতুন মডেল চলবে না (প্রথমে অ্যাডমিনের "নতুন মডেল যাচাই" দরকার)
+            if (!faceMean) await faceLoadDb();
+
+            if (faceEmbModel && (faceMean || faceForceTry)) {
 
                 // গরম করা + আকার যাচাই
                 try {
@@ -9575,7 +9608,7 @@ async function faceLoadDb() {
 
         const cached = tokenLoad(FACE_CACHE_KEY, null);
 
-        if (cached && cached.faces) { faceDbAll = faceParseDb(cached.faces); faceDbApply(); }
+        if (cached && cached.faces) { faceDbAll = faceParseDb(cached.faces); faceMeanSet(cached.mean); faceDbApply(); }
 
     }
 
@@ -9587,13 +9620,15 @@ async function faceLoadDb() {
 
             faceDbAll = faceParseDb(r.faces);
 
+            faceMeanSet(r.mean);
+
             faceDbApply();
 
             faceDbTs = Date.now();
 
             faceDbError = '';
 
-            tokenSave(FACE_CACHE_KEY, { ts: faceDbTs, faces: r.faces });
+            tokenSave(FACE_CACHE_KEY, { ts: faceDbTs, faces: r.faces, mean: r.mean || null });
 
         } else {
 
@@ -11921,6 +11956,8 @@ async function faceModelCheck() {
 
     const rows = [];
 
+    const cosOf = function(x, y) { let d = 0; for (let k = 0; k < x.length; k++) d += x[k] * y[k]; return d; };
+
     for (let m = 0; m < FACE_NORM_MODES.length; m++) {
 
         const mode = FACE_NORM_MODES[m];
@@ -11930,22 +11967,29 @@ async function faceModelCheck() {
 
         for (let i = 0; i < items.length; i++) {
 
-            A.push(await faceEmbedCanvas(items[i].a, mode));
-            F.push(await faceEmbedCanvas(items[i].f, mode));
+            A.push(await faceEmbedCanvas(items[i].a, mode, false));
+            F.push(await faceEmbedCanvas(items[i].f, mode, false));
 
         }
 
-        const diff = faceMeanCos(A);
+        // ১) কেন্দ্রে আনা ছাড়া  ২) সবার গড় মুখ বাদ দিয়ে
+        const mean = new Float32Array(512);
 
-        let same = 0;
+        A.concat(F).forEach(function(v) { for (let k = 0; k < 512; k++) mean[k] += v[k] / (2 * A.length); });
 
-        for (let i = 0; i < A.length; i++) {
-            let d = 0;
-            for (let k = 0; k < A[i].length; k++) d += A[i][k] * F[i][k];
-            same += d / A.length;
-        }
+        const A2 = A.map(function(v) { return faceNormalize512(v, mean); });
+        const F2 = F.map(function(v) { return faceNormalize512(v, mean); });
 
-        rows.push({ mode: mode, diff: diff, same: same, score: same - diff });
+        const sameOf = function(X, Y) { let t = 0; for (let i = 0; i < X.length; i++) t += cosOf(X[i], Y[i]) / X.length; return t; };
+
+        rows.push({
+            mode: mode,
+            rawDiff: faceMeanCos(A), rawSame: sameOf(A, F),
+            diff: faceMeanCos(A2), same: sameOf(A2, F2),
+            mean: mean
+        });
+
+        rows[rows.length - 1].score = rows[rows.length - 1].same - rows[rows.length - 1].diff;
 
     }
 
@@ -11953,26 +11997,48 @@ async function faceModelCheck() {
 
     const top = rows[0];
 
-    // ভালো মডেল: একই মানুষ (আয়নায় উল্টানো) অনেক মেলে, ভিন্ন মানুষ কম মেলে
-    const good = top.same >= 0.55 && top.diff <= 0.6;
+    // ভালো: গড় বাদ দেওয়ার পর একই মানুষ (আয়নায় উল্টানো) স্পষ্ট বেশি মেলে, ভিন্ন মানুষ প্রায় মেলে না
+    const good = top.same >= 0.45 && top.diff <= 0.3 && top.score >= 0.35;
+
+    let saved = false;
+
+    if (good) {
+
+        try {
+
+            const r = await apiGet('saveFaceMean', [{
+                password: tokenPassword,
+                mean: Array.prototype.map.call(top.mean, function(x) { return Math.round(x * 10000); })
+            }]);
+
+            saved = !!(r && r.success);
+
+        } catch (e) { saved = false; }
+
+    }
+
+    const ok = good && saved;
 
     tokenSettings.faceNorm = top.mode;
 
-    tokenSettings.faceEngine = good ? 'insight' : 'dlib';
+    tokenSettings.faceEngine = ok ? 'insight' : 'dlib';
+
+    if (ok) faceMean = top.mean;
 
     tokenSave(TOKEN_KEYS.settings, tokenSettings);
 
     const be = (faceapi.tf.getBackend && faceapi.tf.getBackend()) || '?';
 
     const table = rows.map(function(r) {
-        return r.mode + ': একই ' + r.same.toFixed(2) + ' | ভিন্ন ' + r.diff.toFixed(2);
+        return r.mode + ': একই ' + r.same.toFixed(2) + ' | ভিন্ন ' + r.diff.toFixed(2) +
+               ' <small>(সাধারণ: ' + r.rawSame.toFixed(2) + '/' + r.rawDiff.toFixed(2) + ')</small>';
     }).join('<br>');
 
     Swal.fire({
-        icon: good ? 'success' : 'warning',
-        title: good ? 'নতুন মডেল চালু ✔' : 'নতুন মডেল ভালো কাজ করছে না — পুরনোতেই থাকা হলো',
+        icon: ok ? 'success' : 'warning',
+        title: ok ? 'নতুন মডেল চালু ✔' : 'নতুন মডেল ভালো কাজ করছে না — পুরনোতেই থাকা হলো',
         html: '<div style="text-align:left;font-size:.9rem;">' +
-              (good ? 'এখন সব ফেস আইডি মুছে নতুন করে নিবন্ধন করুন।<br><br>' : '') +
+              (ok ? 'এখন সব ফেস আইডি মুছে নতুন করে নিবন্ধন করুন।<br><br>' : (good ? 'ফল ভালো কিন্তু ইন্টারনেটে সেভ হয়নি — আবার চাপুন।<br><br>' : '')) +
               'নির্বাচিত স্কেল: <b>' + top.mode + '</b><br>মুখ পাওয়া গেছে: ' + detected + '/' + photos.length +
               ' • ব্যাকএন্ড: ' + be + '<br><br>' + table + '</div>'
     });
